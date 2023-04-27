@@ -1,0 +1,37 @@
+<annotation>
+  <folder/>
+  <filename>&#24494;&#20449;&#22270;&#29255;_20230217153909.jpg</filename>
+  <database/>
+  <annotation/>
+  <image/>
+  <size>
+    <height>600</height>
+    <width>1000</width>
+    <depth>3</depth>
+  </size>
+  <segmented/>
+  <object>
+    <name>hole</name>
+    <pose/>
+    <truncated/>
+    <difficult/>
+    <bndbox>
+      <xmin>503.84615384615387</xmin>
+      <ymin>264.1025641025641</ymin>
+      <xmax>531.1965811965812</xmax>
+      <ymax>291.45299145299145</ymax>
+    </bndbox>
+  </object>
+  <object>
+    <name>loose</name>
+    <pose/>
+    <truncated/>
+    <difficult/>
+    <bndbox>
+      <xmin>428.63247863247864</xmin>
+      <ymin>241.88034188034186</ymin>
+      <xmax>498.71794871794873</xmax>
+      <ymax>308.54700854700855</ymax>
+    </bndbox>
+  </object>
+</annotation>

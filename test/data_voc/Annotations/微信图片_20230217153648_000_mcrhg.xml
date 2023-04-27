@@ -1,0 +1,37 @@
+<annotation>
+  <folder/>
+  <filename>&#24494;&#20449;&#22270;&#29255;_20230217153648_000_mcrhg.jpg</filename>
+  <database/>
+  <annotation/>
+  <image/>
+  <size>
+    <height>600</height>
+    <width>1000</width>
+    <depth>3</depth>
+  </size>
+  <segmented/>
+  <object>
+    <name>dirt</name>
+    <pose/>
+    <truncated/>
+    <difficult/>
+    <bndbox>
+      <xmin>548.0891719745223</xmin>
+      <ymin>259.87261146496814</ymin>
+      <xmax>590.1273885350319</xmax>
+      <ymax>315.92356687898086</ymax>
+    </bndbox>
+  </object>
+  <object>
+    <name>dirt</name>
+    <pose/>
+    <truncated/>
+    <difficult/>
+    <bndbox>
+      <xmin>650.6369426751592</xmin>
+      <ymin>390.44585987261144</ymin>
+      <xmax>714.3312101910827</xmax>
+      <ymax>466.8789808917197</ymax>
+    </bndbox>
+  </object>
+</annotation>

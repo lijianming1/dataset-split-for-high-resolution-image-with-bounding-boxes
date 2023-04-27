@@ -1,0 +1,17 @@
+Transform:
+  r: 3
+  c: 2
+  inter_size: 10
+  type: by_count
+#  type: by_image_size
+
+global:
+  show_crops_all_in_one: True
+  show_image_with_crop_cells: True
+  show_crops_with_annotations: True
+
+  data_url: test/data_voc
+  data_format: voc
+
+  log_level: debug
+
