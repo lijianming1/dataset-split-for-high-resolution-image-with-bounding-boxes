@@ -1,10 +1,7 @@
 from ruamel import yaml
 import time
 import os
-import matplotlib
-# matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import numpy as np
+
 
 class YamlParser(object):
     def __init__(self, config_path):
@@ -91,53 +88,4 @@ class GlobalConfigFile(YamlParser):
 
             yaml.dump(self.config, f, Dumper=yaml.RoundTripDumper)
 
-
-
-class Color(object):
-    UNIFORM = True
-    def __init__(self, color_num):
-        self.color_num = color_num
-        self._sliced_cmap = None
-
-    @property
-    def gen_color(self):
-        if self._sliced_cmap is None:
-            # cmap = plt.get_cmap('plasma')
-            # sliced_cmap = cmap(np.linspace(0, 1, self.color_num))
-            # self._sliced_cmap = sliced_cmap[:, :-1]
-            self._sliced_cmap = np.random.randint(0, 256, size=(self.color_num, 3))
-
-        return self._sliced_cmap
-
-
-    def get_color(self, index):
-        return self.gen_color[index]
-
-    def __call__(self, index):
-        if index >= self.color_num:
-           raise NotImplementException(f'out of color map range: {index}')
-
-        color = self.get_color(index)
-        if self.UNIFORM:
-            color = color.astype(np.int32)
-            # color = (color*256).astype(np.int32)
-        return color.tolist()
-
-class NotImplementException(Exception):
-    def __init__(self, error_info):
-        self.error_info = error_info
-        super().__init__(self)
-
-    def __str__(self):
-        return self.error_info
-
-class FileFileter(object):
-    def __init__(self, accepted_extentions=['.png', '.jpg'], skip_basename=['imagesWithLables']):
-        self.accepted_extensions = accepted_extentions
-        self.skip_basename = skip_basename
-
-    def __call__(self, filename, *args, **kwargs):
-        base, ext = os.path.splitext(filename)
-        base = os.path.basename(base)
-        return ext in self.accepted_extensions and base not in self.skip_basename
 
