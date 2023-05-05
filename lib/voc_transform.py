@@ -110,6 +110,12 @@ class TransformVOCDataset(object):
 
 
             img = read_image(img_file)
+
+            # if image width is shorter than height then rotate it by 90 degree
+            # h > w
+            if img.shape[0] > img.shape[1]:
+                img = img.T
+
             img_crops = TF.split(
                 img,
                 show_crops_all_in_one=SHOW_CROPS_ALL_IN_ONE,

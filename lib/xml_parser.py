@@ -9,10 +9,27 @@ class XMLParser(object):
         filename = root.find('filename').text
         width = int(root.find('size').find('width').text)
         height = int(root.find('size').find('height').text)
+
         objects = []
         for obj in root.findall('object'):
             label = obj.find('name').text
             bbox = [int(np.floor(eval(x.text))) for x in obj.find('bndbox')]
+            """
+                -----------------
+                in case of abnormal image width and height, rotation 90 degree and shift image, 
+                in order to make top left point as zero point.
+                -----------------
+                transform rectangle label boxes to the new image coordinate system. transform function 
+                located in lib/rotation_shift.py
+                -----------------
+                add by jmingl@tju.edu.cn at 2023.5.5
+            """
+            if width < height:
+                from rotation_shift import transform_points
+                # shape: [2, 2]
+                q_points = transform_points([bbox[:2], bbox[2:]], width, height, 90)
+                bbox = q_points.flatten().astype(np.int32).tolist()
+                width, height = height, width
             objects.append({'label': label, 'bbox': bbox})
 
         xml_info = {}
@@ -71,7 +88,7 @@ class XMLParser(object):
                     tree = ET.ElementTree(node)
                     return tree
                 else:
-                    # for sub level with one node
+                    # for sub-level with one node
                     if list(kwargs.keys())[0] == 'objects':
                         sub_node = node
                     else:
