@@ -120,7 +120,7 @@ class Transform(object):
             crops.append(crop)
 
             if kwargs.get('show_image_with_crop_cells'):
-                print(color_split(i))
+                # print(color_split(i))
                 cv2.rectangle(image, (x1, y1), (x2,  y2), color=color_split(i), thickness=2)
 
         if kwargs.get('show_crops_all_in_one', True):
@@ -276,7 +276,7 @@ class Transform(object):
         f = lambda d, **kwargs: d.update(**kwargs)
         sub = lambda d, ds, s: re.sub(d, ds, s)
         for ind, box, label in zip(blocks_indexes, bboxes, bboxes_labels):
-            if infos.get(ind) is None:
+            if infos.get(str(ind)) is None:
                 kwargs = {f'{ind}': {}}
                 f(infos, **kwargs)
                 f(

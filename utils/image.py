@@ -33,8 +33,12 @@ def show_images(imgs_list, imgs_titles=None, save_fig_name='all_image_crops.png'
         coords = np.array([int(ind/rc_c), int(ind%rc_c)])
         # bgr to rgb
         try:
-            ax[coords[0], coords[1]].imshow(img[:,:,::-1])
-            ax[coords[0], coords[1]].set(title=til)
+            if len(ax.shape) < 2:
+                ax[coords[1]].imshow(img[:,:,::-1])
+                ax[coords[1]].set(title=til)
+            else:
+                ax[coords[0], coords[1]].imshow(img[:,:,::-1])
+                ax[coords[0], coords[1]].set(title=til)
         except Exception as e:
             ax.imshow(img[:, :, ::-1])
             ax.set(title=til)
@@ -43,4 +47,5 @@ def show_images(imgs_list, imgs_titles=None, save_fig_name='all_image_crops.png'
 
     plt.savefig(f'{save_fig_name}')
     # plt.show()
+    plt.close()
 

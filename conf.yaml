@@ -1,9 +1,11 @@
 Transform:
-  r: 3
-  c: 2
-  inter_size: 10
-  type: by_count
-#  type: by_image_size
+#  r: 3
+  r: 600
+#  c: 2
+  c: 600
+  inter_size: 20
+#  type: by_count
+  type: by_image_size
 
 global:
   show_crops_all_in_one: True

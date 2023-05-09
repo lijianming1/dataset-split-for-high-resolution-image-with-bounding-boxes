@@ -10,11 +10,12 @@ import cv2
 import numpy as np
 import logging
 import matplotlib
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 import xml.etree.ElementTree as ET
 import shutil
+from tqdm import tqdm
 
 from utils import FileFilter, file_folder_exists_check, file_check
 from utils import read_image, save_image, show_images
@@ -95,7 +96,7 @@ class TransformVOCDataset(object):
         # get all image files and start to do transform task.
         image_generator = file_generator(self.dataset_url, ignore_folder_names=self.ignore_folder_names, interest_file_exts=self.interest_file_exts)
 
-        for img_file in image_generator:
+        for img_file in tqdm(image_generator, desc='processing'):
             img_file_side = self.gen_side_path_from_file_path(img_file)
             save_dir_name = os.path.dirname(img_file_side)
             file_folder_exists_check(save_dir_name, folder_create=True)
@@ -124,6 +125,9 @@ class TransformVOCDataset(object):
                 image_with_crops_cells_name=image_with_crops_cells_name
             )
             file_name, ext = os.path.splitext(save_file_name)
+
+            # crop size
+            img_h_crop, img_w_crop = img_crops[0].shape[:2]
 
             for i, crop in enumerate(img_crops):
 
@@ -166,7 +170,7 @@ class TransformVOCDataset(object):
             assigned_bbox_coordinates_block_world = TF.transform_bbox_coord_to_block_world(assigned_bbox_coordinates, assigned_block_index, img_w, img_h)
 
             # save image info and bbox info to xml file
-            crop_file_info = TF.make_info(filename=save_file_name, img_w=img_w, img_h=img_h, img_c=c, bboxes=assigned_bbox_coordinates_block_world.tolist(), bboxes_labels=assigned_bbox_labels.tolist(), blocks_indexes=assigned_block_index.tolist())
+            crop_file_info = TF.make_info(filename=save_file_name, img_w=img_w_crop, img_h=img_h_crop, img_c=c, bboxes=assigned_bbox_coordinates_block_world.tolist(), bboxes_labels=assigned_bbox_labels.tolist(), blocks_indexes=assigned_block_index.tolist())
 
             logger.info(f"all crops xml file info: {crop_file_info}")
 

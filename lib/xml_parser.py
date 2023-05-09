@@ -84,7 +84,8 @@ class XMLParser(object):
                     tree_depth += 1
                     # just jump in to next level
                     create_xml_tree(tree_depth, node=node, **dict(list(kwargs.values())[0]))
-                    ET.dump(node)
+                    # dump will print out node details
+                    # ET.dump(node)
                     tree = ET.ElementTree(node)
                     return tree
                 else:
@@ -115,7 +116,7 @@ class XMLParser(object):
                 tree_depth += 1
                 for k, v in kwargs.items():
                     create_xml_tree(tree_depth, node, **{k:v})
-                    ET.dump(node)
+                    # ET.dump(node)
 
 
         tree = create_xml_tree(annotation=bbox_info)
@@ -136,3 +137,29 @@ class XMLParser(object):
 
         return np.array(labels), np.array(bboxes)
 
+    @classmethod
+    def update_xml_file(cls, xml_file, update={'size.width': '640', 'size.height': '640'}):
+        def find_sub_node(root, key, value):
+            keys = key.split('.')
+            sub = root.find(keys[0])
+
+            if len(keys) > 1:
+                return find_sub_node(sub, '.'.join(keys[1:]), value)
+
+            sub.text = value
+
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
+        for k, v in update.items():
+            find_sub_node(root, k, v)
+        # ET.dump(tree)
+        tree.write(xml_file)
+
+
+
+if __name__ == '__main__':
+    ph = '/windata/f/computer_vision/221213-袜子外观检测/100_for_test_resized_enhancement_VOC_trans/Annotations'
+    import glob
+    xml_files = glob.glob(ph + '/*.xml')
+    for f in xml_files:
+        XMLParser.update_xml_file(f)
