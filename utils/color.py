@@ -1,6 +1,7 @@
 import numpy as np
-from .exception import NotImplementException
+from dataset_voc_split_with_bbox_for_high_resolution.utils.exception import NotImplementException
 
+np.random.seed(20230520)
 class Color(object):
     UNIFORM = True
     def __init__(self, color_num):
@@ -23,10 +24,15 @@ class Color(object):
 
     def __call__(self, index):
         if index >= self.color_num:
-           raise NotImplementException(f'out of color map range: {index}')
+           raise NotImplementException('out of color map range: {0}'.format(index))
 
         color = self.get_color(index)
         if self.UNIFORM:
             color = color.astype(np.int32)
             # color = (color*256).astype(np.int32)
         return color.tolist()
+
+
+if __name__ == '__main__':
+    c = Color(3)
+    print(c.gen_color)

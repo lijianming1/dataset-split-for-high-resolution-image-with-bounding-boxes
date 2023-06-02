@@ -24,11 +24,11 @@ def show_images(imgs_list, imgs_titles=None, save_fig_name='all_image_crops.png'
     :return:
     """
     rc_c = int(np.ceil(np.sqrt(len(imgs_list))))
-    rc_r = int(np.floor(len(imgs_list)/rc_c))
+    rc_r = int(np.ceil(len(imgs_list)/rc_c))
     fig, ax = plt.subplots(rc_r, rc_c)
     fig.set_facecolor('lightgrey')
     if not imgs_titles:
-        imgs_titles = [f"crop{i}" for i in range(len(imgs_list))]
+        imgs_titles = ["crop{0}".format(i) for i in range(len(imgs_list))]
     for ind, (img, til) in enumerate(zip(imgs_list, imgs_titles)):
         coords = np.array([int(ind/rc_c), int(ind%rc_c)])
         # bgr to rgb
@@ -45,7 +45,7 @@ def show_images(imgs_list, imgs_titles=None, save_fig_name='all_image_crops.png'
     if rc_c > 1:
         fig.suptitle('All Image Crops')
 
-    plt.savefig(f'{save_fig_name}')
+    plt.savefig(save_fig_name)
     # plt.show()
     plt.close()
 

@@ -17,13 +17,13 @@ import xml.etree.ElementTree as ET
 import shutil
 from tqdm import tqdm
 
-from utils import FileFilter, file_folder_exists_check, file_check
-from utils import read_image, save_image, show_images
-from utils import file_generator, YamlParser
-from utils import Color, NotImplementException
-from utils import logger, CONF
+from dataset_voc_split_with_bbox_for_high_resolution.utils import FileFilter, file_folder_exists_check, file_check
+from dataset_voc_split_with_bbox_for_high_resolution.utils import read_image, save_image, show_images
+from dataset_voc_split_with_bbox_for_high_resolution.utils import file_generator, YamlParser, file_generator1
+from dataset_voc_split_with_bbox_for_high_resolution.utils import Color, NotImplementException
+from dataset_voc_split_with_bbox_for_high_resolution.utils import logger, CONF
 
-from lib import TransFormType, Transform, XMLParser
+from dataset_voc_split_with_bbox_for_high_resolution.lib import TransFormType, Transform, XMLParser
 
 color_class = Color(6)
 
@@ -51,7 +51,7 @@ class TransformVOCDataset(object):
         return info_path
 
     def copy_class_names_file(self):
-        class_name_file_sour_path = next(file_generator(self.dataset_url,ignore_folder_names=[], interest_file_exts=['.txt'], max_depth=1))
+        class_name_file_sour_path = next(file_generator1(self.dataset_url,ignore_folder_names=[], interest_file_exts=['.txt'], max_depth=1))
         # if class name file doesn't exit then return False
         if class_name_file_sour_path is None:
             return None
@@ -94,7 +94,8 @@ class TransformVOCDataset(object):
         # set up transform setup
         TF = Transform(r=R, c=C, inter_size=INTER_SIZE, split_type=SPLIT_TYPE)
         # get all image files and start to do transform task.
-        image_generator = file_generator(self.dataset_url, ignore_folder_names=self.ignore_folder_names, interest_file_exts=self.interest_file_exts)
+        # image_generator = file_generator(self.dataset_url, ignore_folder_names=self.ignore_folder_names, interest_file_exts=self.interest_file_exts)
+        image_generator = file_generator(self.dataset_url)
 
         for img_file in tqdm(image_generator, desc='processing'):
             img_file_side = self.gen_side_path_from_file_path(img_file)
@@ -115,7 +116,7 @@ class TransformVOCDataset(object):
             # if image width is shorter than height then rotate it by 90 degree
             # h > w
             if img.shape[0] > img.shape[1]:
-                img = img.T
+                img = np.rot90(img)
 
             img_crops = TF.split(
                 img,
@@ -190,8 +191,11 @@ class TransformVOCDataset(object):
 
                 XMLParser.gen_xml_file(xml_info, save_crop_xml_file_path)
 
-            if SHOW_CROPS_WITH_ANNOTATIONS:
-                self.show_crop_with_annotation(self.gen_side_path_from_file_path(self.dataset_url)+'/Annotations')
+                # if SHOW_CROPS_WITH_ANNOTATIONS:
+                #     self.show_crop_with_annotation(save_crop_xml_file_path)
+
+        if SHOW_CROPS_WITH_ANNOTATIONS:
+            self.show_crop_with_annotation(self.gen_side_path_from_file_path(self.dataset_url)+'/Annotations')
 
     def show_crop_with_annotation(self, annotations_path):
         def parse_voc_xml_to_bbox(file_path):
@@ -211,8 +215,10 @@ class TransformVOCDataset(object):
                 labels.append(label)
             return labels, bboxes
 
-
-        annotations_gen = file_generator(data_path=annotations_path, ignore_folder_names=[], interest_file_exts=['.xml'])
+        if not os.path.isfile(annotations_path):
+            annotations_gen = file_generator1(data_path=annotations_path, ignore_folder_names=[], interest_file_exts=['.xml'])
+        else:
+            annotations_gen = [annotations_path]
         for xml_file_path in annotations_gen:
             crops_file_path = re.sub('Annotations', 'JPEGImages', xml_file_path)
             crops_file_path = re.sub('\.xml', '.jpg', crops_file_path)

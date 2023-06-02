@@ -31,7 +31,7 @@ def file_check(file, ext=['.png', '.jpg'], skip_basename=[]):
     flag = ft(file)
     return flag
 
-def file_generator(data_path, ignore_folder_names=['AnnotationsVisualization', ], interest_file_exts=['.jpg', '.png',], max_depth=100):
+def file_generator1(data_path, ignore_folder_names=['AnnotationsVisualization', ], interest_file_exts=['.jpg', '.png',], max_depth=100):
     """
 
     :param data_path:
@@ -54,7 +54,7 @@ def file_generator(data_path, ignore_folder_names=['AnnotationsVisualization', ]
             # if not file_check(filepath, ext=[''], skip_basename=['AnnotationsVisualization', 'Annotations']):
             if not file_check(filepath, ext=[''], skip_basename=ignore_folder_names):
                 continue
-            for file_path in file_generator(filepath, ignore_folder_names=ignore_folder_names, interest_file_exts=interest_file_exts, max_depth=max_depth):
+            for file_path in file_generator1(filepath, ignore_folder_names=ignore_folder_names, interest_file_exts=interest_file_exts, max_depth=max_depth):
                 yield file_path
 
         # begin to yield
@@ -65,3 +65,9 @@ def file_generator(data_path, ignore_folder_names=['AnnotationsVisualization', ]
             yield filepath
 
 
+def file_generator(data_path):
+
+    data_path = os.path.join(data_path, 'JPEGImages')
+    cnt = os.listdir(data_path)
+    cnt = [os.path.join(data_path, ph) for ph in cnt]
+    return cnt

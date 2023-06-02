@@ -1,9 +1,9 @@
 Transform:
 #  r: 3
-  r: 600
+  r: 488
 #  c: 2
-  c: 600
-  inter_size: 20
+  c: 1000
+  inter_size: 12
 #  type: by_count
   type: by_image_size
 

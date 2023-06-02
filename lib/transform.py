@@ -2,17 +2,19 @@ import cv2
 import re
 import logging
 from enum import Enum
-from utils import logger, Color, show_images
+from dataset_voc_split_with_bbox_for_high_resolution.utils import logger, Color, show_images
 import numpy as np
 
-color_split = Color(20)
+color_split = Color(100)
 
 class TransFormType(Enum):
     BY_COUNT = 1
     BY_IMAGE_SIZE = 2
     @classmethod
     def get(cls, type):
-        return cls.__getattr__(type.upper())
+        if isinstance(type, str):
+            return cls.__getattr__(type.upper())
+        return cls.__getattr__(type)
 
 
 class Transform(object):
@@ -29,7 +31,7 @@ class Transform(object):
         self.c_num = c
         # cross area size, must bigger than minimum size of defect
         self.inter_size = inter_size
-        self.split_type = split_type
+        self.split_type = TransFormType.get(split_type) if isinstance(split_type, str) else split_type
 
 
     def split_and_pad(self, image):
@@ -52,6 +54,10 @@ class Transform(object):
         # pad for all images at top and left most areas
         # pad top = inter_size， pad left = inter_size
         image = cv2.copyMakeBorder(image, top=int(self.inter_size), bottom=0, left=int(self.inter_size), right=0, borderType=cv2.BORDER_CONSTANT, value=(114, 114, 114))
+
+        if len(image.shape) == 2:
+            image = np.expand_dims(image, -1)
+
         return image
 
     def get_split_stride_rc_info(self, w, h):
@@ -70,7 +76,7 @@ class Transform(object):
             stride_w, stride_h = self.c_num, self.r_num
             r_num, c_num = int(np.ceil(h / self.r_num)), int(np.ceil(w / self.c_num))
         else:
-            raise (NotImplementException('not implement transform split type'))
+            raise (NotImplementedError('not implement transform split type'))
 
         logger.debug(f"split stride: stride_w={stride_w}, stride_h:={stride_h}")
 
@@ -179,6 +185,26 @@ class Transform(object):
 
         return bbox_coord_block_world
 
+    def transform_coord_from_block_world_to_original_image_world(self, bbox_coord, assigned_block_index, img_w, img_h):
+        # shape: [1, -1] -> [n, 4]
+        bbox_coord = np.array(bbox_coord).reshape(-1, 4)
+        block_coord = np.array(self.get_block_coord_by_index(assigned_block_index, img_w, img_h)).reshape(-1, 4)
+
+        # shift coordinates to original padded image
+        # shape: [n, 4]
+        bbox_coord = bbox_coord + np.tile(block_coord[:, :2], (1, 2))
+
+        # shift coordinates to original image
+        # shape: [n ,4]
+        bbox_coord = bbox_coord - self.inter_size
+        # if out of image size then truncate it to image size
+        bbox_coord[bbox_coord < 0.0] = 0.0
+        # x1, x2 less than image width
+        bbox_coord[:, ::2] = np.where(bbox_coord[:, ::2] < img_w, bbox_coord[:, [0, 2]], img_w)
+        # y1, y2 less than image height
+        bbox_coord[:, 1::2] = np.where(bbox_coord[:, 1::2] < img_h, bbox_coord[:, 1::2], img_h)
+        bbox_coord = bbox_coord.reshape(1, -1)
+        return bbox_coord
 
     def bbox_block_assign(self, img_w, img_h, bboxes, bboxes_labels):
         """

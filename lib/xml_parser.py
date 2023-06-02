@@ -1,5 +1,7 @@
 import numpy as np
 import xml.etree.ElementTree as ET
+from dataset_voc_split_with_bbox_for_high_resolution.lib.rotation_shift import transform_points
+
 
 class XMLParser(object):
     @classmethod
@@ -25,13 +27,13 @@ class XMLParser(object):
                 add by jmingl@tju.edu.cn at 2023.5.5
             """
             if width < height:
-                from rotation_shift import transform_points
-                # shape: [2, 2]
+                # shape: [1, 2, 2]
                 q_points = transform_points([bbox[:2], bbox[2:]], width, height, 90)
                 bbox = q_points.flatten().astype(np.int32).tolist()
-                width, height = height, width
             objects.append({'label': label, 'bbox': bbox})
 
+        if width < height:
+            width, height = height, width
         xml_info = {}
         (lambda d, **kwargs: d.update(**kwargs)) (xml_info, filename=filename, size={'width':width, 'height':height}, objects=objects)
 
@@ -96,13 +98,13 @@ class XMLParser(object):
                         sub_node = ET.SubElement(node, list(kwargs.keys())[0])
 
 
-                if not isinstance(list(kwargs.values())[0], str|int|list) and len(list(kwargs.values())[0]) > 1:
+                if not isinstance(list(kwargs.values())[0], (str,int,list)) and len(list(kwargs.values())[0]) > 1:
                     # for sub level has multiple nodes
                     tree_depth += 1
                     # jump into level with multiple nodes
                     create_xml_tree(tree_depth, sub_node, **dict(list(kwargs.values())[0]))
                 else:
-                    if not isinstance(list(kwargs.values())[0], list|dict):
+                    if not isinstance(list(kwargs.values())[0], (list,dict)):
                         sub_node.text = str(list(kwargs.values())[0])
 
                     else:
