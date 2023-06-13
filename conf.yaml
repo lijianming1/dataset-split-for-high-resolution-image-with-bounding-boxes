@@ -15,5 +15,5 @@ global:
   data_url: test/data_voc
   data_format: voc
 
-  log_level: debug
+  log_level: warn
 

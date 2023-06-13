@@ -19,7 +19,10 @@ def file_folder_exists_check(fph, folder_create=True):
                 # logger.info(f"create save folder: {fph}")
                 # return true after create the folder.
                 return True
-            # if file is not exist then return false.
+            # if file is not exist then create file folder and return false.
+            file_folder = os.path.dirname(fph)
+            if not os.path.exists(file_folder):
+                os.makedirs(file_folder)
             return False
         else:
             # if folder is not exist then return false.
